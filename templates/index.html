@@ -1,36 +1,56 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <meta charset="UTF-8">
+    <title>Bot Panel</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <style>
-        body { background: #0f0f0f; color: #00ff00; font-family: 'Courier New', monospace; }
-        .terminal { background: #000; height: 350px; overflow-y: auto; border: 1px solid #333; padding: 10px; font-size: 13px; }
-        .success-box { background: #1a1a1a; height: 350px; overflow-y: auto; border: 1px solid #00ff00; padding: 10px; }
+        body { background: #0f0f0f; color: #00ff00; font-family: monospace; }
+        .terminal { background: #000; height: 400px; overflow-y: auto; border: 1px solid #333; padding: 15px; font-size: 12px; }
+        .success-box { background: #1a1a1a; height: 400px; overflow-y: auto; border: 1px solid #00ff00; padding: 15px; }
+        .form-control { background: #222; color: #00ff00; border: 1px solid #444; }
+        .form-control:focus { background: #222; color: #00ff00; border-color: #00ff00; box-shadow: none; }
     </style>
 </head>
 <body class="container py-4">
     <div class="row">
         <div class="col-md-7">
-            <h4>GARANTİ BOT - CANLI PANEL</h4>
-            <textarea id="tcs" class="form-control bg-dark text-white mb-2" rows="5" placeholder="TC Listesi..."></textarea>
-            <input type="text" id="pw" class="form-control bg-dark text-white mb-2" placeholder="Şifre">
-            <input type="number" id="th" class="form-control bg-dark text-white mb-2" value="2" placeholder="Thread">
-            <button onclick="run('start')" class="btn btn-success w-100 mb-2">BOTU BAŞLAT</button>
+            <h4 class="mb-3">KONTROL PANELİ</h4>
+            <textarea id="tcs" class="form-control mb-2" rows="6" placeholder="TC Listesi..."></textarea>
+            <div class="row mb-2">
+                <div class="col"><input type="text" id="pw" class="form-control" placeholder="Şifre"></div>
+                <div class="col"><input type="number" id="th" class="form-control" value="2"></div>
+            </div>
+            <button onclick="run('start')" class="btn btn-success w-100 mb-3">BAŞLAT</button>
+            <button onclick="run('stop')" class="btn btn-danger w-100 mb-3">DURDUR</button>
             <div id="term" class="terminal"></div>
         </div>
         <div class="col-md-5">
-            <h4>BAŞARILI GİRİŞLER</h4>
-            <div id="sucs" class="success-box"></div>
+            <h4 class="mb-3">BAŞARILI GİRİŞLER</h4>
+            <div id="sucs" class="success-box mb-3"></div>
+            <a href="/download" class="btn btn-primary w-100">LİSTEYİ İNDİR</a>
         </div>
     </div>
     <script>
         const socket = io();
-        socket.on('log', d => { const t = document.getElementById('term'); t.innerHTML += `<div>${d.m}</div>`; t.scrollTop = t.scrollHeight; });
-        socket.on('success', d => { document.getElementById('sucs').innerHTML += `<div class="text-white border-bottom">${d.tc}</div>`; });
+        socket.on('log', d => { 
+            const t = document.getElementById('term'); 
+            t.innerHTML += `<div>${d.m}</div>`; 
+            t.scrollTop = t.scrollHeight; 
+        });
+        socket.on('success', d => { 
+            document.getElementById('sucs').innerHTML += `<div class="text-white border-bottom py-1">${d.tc}</div>`; 
+        });
         function run(op) {
-            fetch('/action', { method:'POST', headers:{'Content-Type':'application/json'}, 
-                body: JSON.stringify({op, tcs:document.getElementById('tcs').value, pw:document.getElementById('pw').value, th:document.getElementById('th').value}) });
+            const tcs = document.getElementById('tcs').value;
+            const pw = document.getElementById('pw').value;
+            const th = document.getElementById('th').value;
+            fetch('/action', { 
+                method:'POST', 
+                headers:{'Content-Type':'application/json'}, 
+                body: JSON.stringify({op, tcs, pw, th}) 
+            });
         }
     </script>
 </body>
