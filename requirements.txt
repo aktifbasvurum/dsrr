@@ -2,3 +2,5 @@ flask
 flask-socketio
 playwright
 requests
+eventlet
+gunicorn
